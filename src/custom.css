@@ -1,10 +1,18 @@
 .main-container {
-    margin-top: 100px;
+    margin-top: 10px;
 }
 
 .fa-microphone {
     color: #14A76C;
+    font-size: 3em;
+    line-height: 1.5em;
 }
+
+.fa-microphone.active {
+    color: #58c89b;
+}
+
+
 
 .fa-microphone:hover {
     color: #0c6e47;
@@ -34,9 +42,15 @@
     color: #d44916;
 }
 
+.control {
+    
+}
+
 .output-display {
     background-color: #383b4b;
     height: 700px;
+    font-size: 5em;
+    line-height: 1.1em;
 }
 
 .fas, .fa {

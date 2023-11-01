@@ -7,10 +7,10 @@ import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
 export default function App() { 
-    const [displayText, setDisplayText] = useState('INITIALIZED: ready to test speech...');
+    const [displayText, setDisplayText] = useState('Ready. Click mic to start');
     const [player, updatePlayer] = useState({p: undefined, muted: false});
 
-    async function sttFromMic() {
+    async function sttFromMic(lastText, lastText2) {
         const tokenObj = await getTokenOrRefresh();
         const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
         speechConfig.speechRecognitionLanguage = 'en-US';
@@ -18,14 +18,16 @@ export default function App() {
         const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
         const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
 
-        setDisplayText('speak into your microphone...');
+        setDisplayText(`${lastText2} ${lastText}`);
 
         recognizer.recognizeOnceAsync(result => {
             if (result.reason === ResultReason.RecognizedSpeech) {
-                setDisplayText(`RECOGNIZED: Text=${result.text}`);
+                lastText2 = lastText
+                lastText = result.text
             } else {
                 setDisplayText('ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.');
             }
+            sttFromMic(lastText, lastText2)
         });
     }
 
@@ -101,34 +103,11 @@ export default function App() {
 
     return (
         <Container className="app-container">
-            <h1 className="display-4 mb-3">Speech sample app</h1>
-
             <div className="row main-container">
-                <div className="col-6">
+                <div className="col-12 control">
                     <i className="fas fa-microphone fa-lg mr-2" onClick={() => sttFromMic()}></i>
-                    Convert speech to text from your mic.
-
-                    <div className="mt-2">
-                        <label htmlFor="audio-file"><i className="fas fa-file-audio fa-lg mr-2"></i></label>
-                        <input 
-                            type="file" 
-                            id="audio-file" 
-                            onChange={(e) => fileChange(e)} 
-                            style={{display: "none"}} 
-                        />
-                        Convert speech to text from an audio file.
-                    </div>
-                    <div className="mt-2">
-                        <i className="fas fa-volume-up fa-lg mr-2" onClick={() => textToSpeech()}></i>
-                        Convert text to speech.
-                    </div>
-                    <div className="mt-2">
-                        <i className="fas fa-volume-mute fa-lg mr-2" onClick={() => handleMute()}></i>
-                        Pause/resume text to speech output.
-                    </div>
-
                 </div>
-                <div className="col-6 output-display rounded">
+                <div className="col-12 output-display rounded">
                     <code>{displayText}</code>
                 </div>
             </div>
